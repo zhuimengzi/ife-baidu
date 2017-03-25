@@ -9,7 +9,7 @@
   <label>请输入北京今天空气质量：<input id="aqi-input" type="text"></label>
   <button id="button">确认填写</button>
 
-  <div>您输入的值是：<span id="aqi-display">尚无录入</span></div>
+  <div>您输入的值是：<span id="aqi-display">000<i>66</i><i>21312</i></span></div>
 
 <script type="text/javascript">
 
@@ -21,10 +21,19 @@
 
   // 点击按钮的时候给aqiDisplay元素的内容赋值
   button.addEventListener("click",function(){
-    aqiDisplay.textContent = aqiInput.value;
+    // aqiDisplay.textContent = aqiInput.value;
+    console.log(aqiDisplay.textContent)
   });
 
 })();
+
+// textContent 属性设置或返回指定节点的文本内容，以及它的所有后代。
+// 如果您设置了 textContent 属性，会删除所有子节点，并被替换为包含指定字符串的一个单独的文本节点。
+
+
+// nodeValue 属性设置或返回指定节点的节点值。
+// 注释：如果您希望返回元素的文本，请记住文本始终位于文本节点中，并且您必须返回文本节点的值（element.childNodes[0].nodeValue）。
+// 提示：nodeValue 属性的替代选择是 textContent 属性。
 
 </script>
 </body>
