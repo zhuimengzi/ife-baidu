@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    body{
+      width:980px;
+      margin:100px auto;
+    }
+    ul{
+      list-style:none;
+      padding:0;
+    }
+    #nums{
+      display:flex;
+      flex-wrap:wrap;
+    }
+    #nums li{
+      margin-right:10px;
+      margin-bottom:10px;
+      padding:0 10px;
+      height:40px;
+      line-height:40px;
+      background-color:red;
+      color:#fff;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <div>
+      <input id="txt" type="number" placeholder="请输入要添加的数字">
+      <input id="in_left" type="button" value="左侧入">
+      <input id="in_right" type="button" value="右侧入">
+      <input id="out_left" type="button" value="左侧出">
+      <input id="out_right" type="button" value="右侧出">
+    </div>
+    <ul id="nums">
+    </ul>
+  </section>
+  <script>
+    (function(){
+      // 队列构造器
+      function Queue(dom){
+        this.dom = document.querySelector(dom);
+      }
+      Queue.prototype = {
+        constructor:this,
+        // 左侧入
+        inLeft:function(num){
+          var childs = this.dom.children,
+              li = document.createElement("li");
+
+          li.textContent = num;
+          // 如果当前ul中没有子元素则直接用appendChild方法，如果有子元素则用insertBefore
+          if(childs.length > 0){
+            this.dom.insertBefore(li,childs[0]);
+          }else{
+            this.dom.appendChild(li);
+          }
+        },
+        // 右侧入
+        inRight:function(num){
+          this.dom.innerHTML += `<li>${num}</li>`;
+        },
+        // 左侧出
+        outLeft:function(){
+          var first = this.dom.children[0],
+              num = first.textContent;
+
+          this.dom.removeChild(first);
+          return num;
+        },
+        // 右侧出
+        outRight:function(){
+          var last = this.dom.children[this.dom.children.length-1],
+              num = last.textContent;
+
+          this.dom.removeChild(last);
+          return num;
+        }
+      };
+
+      // 获取元素
+      var txt = document.getElementById("txt"),
+          inLeft = document.getElementById("in_left"),
+          inRight = document.getElementById("in_right"),
+          outLeft = document.getElementById("out_left"),
+          outRight = document.getElementById("out_right"),
+          nums = document.getElementById("nums");
+
+      var queue = new Queue("#nums");
+
+      /*
+        
+        思路：判断是否有输入内容，如果有接着判断是否是数字（虽然已经将input的类型设置成了number），如果是数字，执行相应的队列方法。
+
+        实现这个功能倒不是难事，主要还是要解耦合啦
+
+       */
+
+      inLeft.addEventListener("click",function(){
+        var val = txt.value;
+        if(val&&!isNaN(val)){
+          queue.inLeft(val);
+          txt.value = "";
+        }
+      });
+
+      inRight.addEventListener("click",function(){
+        var val = txt.value;
+        if(val&&!isNaN(val)){
+          queue.inRight(val);
+          txt.value = "";
+        }
+      });
+
+      outLeft.addEventListener("click",function(){
+        var val = txt.value;
+        if(nums.children.length > 0){
+          alert(queue.outLeft());
+        }
+      });
+
+      outRight.addEventListener("click",function(){
+        var val = txt.value;
+        if(nums.children.length > 0){
+          alert(queue.outRight());
+        }
+      });
+    }())
+  </script>
+</body>
+</html>
