@@ -40,6 +40,7 @@ var aqiData = [
   // 过滤
   function filter(filterNum){
     var resultArray = [];
+    // 这里也可以直接使用数组的filter或map方法实现
     aqiData.forEach(item=>{
       // 挨个判断当前数据是否大于过滤项
       if(item[1] > filterNum){

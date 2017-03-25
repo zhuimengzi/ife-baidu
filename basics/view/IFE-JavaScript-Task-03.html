@@ -1,0 +1,116 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>IFE JavaScript Task 01</title>
+  <style>
+      #resort{
+        counter-reset:ranking;
+      }
+      #resort li{
+        counter-increment:ranking;
+      }
+      #resort .num::before{
+        content:counter(ranking,cjk-ideographic);
+      }
+  </style>
+  </head>
+<body>
+
+  <ul id="source">
+    <li>北京空气质量：<b>90</b></li>
+    <li>上海空气质量：<b>70</b></li>
+    <li>天津空气质量：<b>80</b></li>
+    <li>广州空气质量：<b>50</b></li>
+    <li>深圳空气质量：<b>40</b></li>
+    <li>福州空气质量：<b>32</b></li>
+    <li>成都空气质量：<b>90</b></li>
+  </ul>
+
+  <ul id="resort">
+    <!-- 
+    <li>第一名：北京空气质量：<b>90</b></li>
+    <li>第二名：北京空气质量：<b>90</b></li>
+    <li>第三名：北京空气质量：<b>90</b></li>
+     -->
+
+  </ul>
+
+  <button id="sort-btn">排序</button>
+
+<script type="text/javascript">
+
+// 获取数据
+function getData() {
+  var source = document.getElementById("source"),
+      data = [];
+
+  // 将children转成数组，遍历子元素
+  Array.from(source.children).forEach(item=>{
+    // 获取城市和空气质量
+    var nodes = item.childNodes,
+        // 因为城市名不一定是两位，所以取一个相对固定的值，把它前面的内容截取下来
+        city = nodes[0].nodeValue.substring(0,nodes[0].nodeValue.indexOf("空气质量")),
+        // 将字符串转数字
+        quality = parseFloat(nodes[1].textContent);
+    data.push([city,quality]);
+  });
+  return data;
+}
+
+// 排序
+function sortAqiData(data) {
+  var i = 0,
+      j = 0,
+      len = data.length,
+      temp = null;
+      
+  // 冒泡排序
+  for(;i<len;i+=1){
+    for(j=i+1;j<len;j+=1){
+      // 交换数据，如果前一个大于后一个则将后一个放前面
+      if(data[i][1] > data[j][1]){
+        temp = data[i][1];
+
+        data[i][1] = data[j][1];
+        data[j][1] = temp;
+      }
+    }
+  }
+
+  return data;
+}
+
+/**
+ * render
+ * 将排好序的城市及空气质量指数，输出显示到id位resort的列表中
+ * 格式见ul中的注释的部分
+ */
+function render(data) {
+  var resort = document.getElementById("resort"),
+      html = "";
+
+  data.forEach(item=>{
+    // 字符串拼接
+    html += `<li>第<span class="num"></span>名：${item[0]}空气质量：<b>${item[1]}</b></li>`;
+  });
+
+  resort.innerHTML = html;
+}
+
+function btnHandle() {
+  var aqiData = getData();
+  aqiData = sortAqiData(aqiData);
+  render(aqiData);
+}
+
+function init() {
+  var sortBtn = document.getElementById("sort-btn");
+  sortBtn.addEventListener("click",btnHandle);
+}
+
+init();
+
+</script>
+</body>
+</html>
