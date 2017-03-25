@@ -130,6 +130,14 @@
           alert(queue.outRight());
         }
       });
+
+      // 点击当前元素删除
+      nums.addEventListener("click",function(event){
+        // 通过matches判断当前点击的元素是否符合条件，如果符合则删除
+        if(event.target.matches("#nums > li")){
+          event.currentTarget.removeChild(event.target);
+        }
+      });
     }())
   </script>
 </body>
