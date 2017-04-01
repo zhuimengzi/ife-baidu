@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    div{
+      display:flex;
+      flex:1;
+      align-items:center;
+      justify-content:center;
+      width:50%;
+      padding:10px;
+      box-sizing:border-box;
+      margin-right:10px;
+      border:1px solid #000;
+      background-color:#fff;
+    }
+    .on{
+      background-color:green;
+    }
+  </style>
+</head>
+<body>
+  <div id="box">
+    <div>
+      <div>
+        <div></div>
+        <div></div>
+      </div>
+      <div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+    <div>
+      <div>
+        <div></div>
+        <div></div>
+      </div>
+      <div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function Tree(box){
+      var root = new Node(box);
+      function Node(node){
+        this.node = node;
+        this.left = null;
+        this.right = null;
+      }
+      function insertNode(parent){
+        var parentNode = parent.node;
+        if(!parentNode)return;
+        if(parentNode.firstElementChild){
+          parent.left = new Node(parentNode.firstElementChild);
+          insertNode(parent.left);
+        }
+        if(parentNode.lastElementChild){
+          parent.right = new Node(parentNode.lastElementChild);
+          insertNode(parent.right);
+        }
+      }
+      this.showRoot = function(){
+        return root;
+      };
+      insertNode(root);
+    }
+    Tree.prototype = {
+      preOrder:function(){
+        var root = this.showRoot();
+        var arr = [root.node];
+        function getNode(current){
+          if(!current.node){
+            return;
+          }
+          if(current.left){
+            arr.push(current.left.node);
+            getNode(current.left);
+          }
+          if(current.right){
+            arr.push(current.right.node);
+            getNode(current.right);
+          }
+        }
+        getNode(root);
+        return arr;
+      }
+    };
+    var tree = new Tree(box),
+        arr = tree.preOrder(),
+        len = arr.length - 1,
+        index = 0;
+    var time = setInterval(function(){
+      if(index == len){
+        clearInterval(time);
+      }
+      if(index!=0){
+        arr[index-1].classList.remove("on");
+      }
+      arr[index].classList.add("on");
+
+      index++;
+    },200);
+  </script>
+</body>
+</html>
