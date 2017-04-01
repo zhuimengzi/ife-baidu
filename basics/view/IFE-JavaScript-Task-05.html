@@ -12,6 +12,9 @@
       list-style:none;
       padding:0;
     }
+    #txt{
+      width:150px;
+    }
     #nums{
       display:flex;
       flex-wrap:wrap;
@@ -26,11 +29,29 @@
       color:#fff;
       text-align:center;
     }
+    #view{
+      position:fixed;
+      width:980px;
+    }
+    #view > ul{
+      display:flex;
+      align-items: flex-end;
+    }
+    #view > ul li{
+      background-color: red;
+      width: 20px;
+      text-align: center;
+      color: #fff;
+    }
+    #view > ul li:not(:last-child){
+      margin-right:10px;
+    }
   </style>
 </head>
 <body>
   <section>
     <div>
+      <h3>操作台</h3>
       <input id="txt" type="number" placeholder="请输入要添加的数字">
       <input id="in_left" type="button" value="左侧入">
       <input id="in_right" type="button" value="右侧入">
@@ -39,12 +60,18 @@
     </div>
     <ul id="nums">
     </ul>
+    <div id="view">
+      <h3>View</h3>
+      <ul id="viewBox">
+      </ul>
+    </div>
   </section>
   <script>
     (function(){
       // 队列构造器
-      function Queue(dom){
+      function Queue(dom,viewDom){
         this.dom = document.querySelector(dom);
+        this.state = 0;
       }
       Queue.prototype = {
         constructor:this,
@@ -60,26 +87,56 @@
           }else{
             this.dom.appendChild(li);
           }
+          this.state = 0;
+          this.upView(num);
         },
         // 右侧入
         inRight:function(num){
           this.dom.innerHTML += `<li>${num}</li>`;
+          this.state = 1;
+          this.upView(num);
         },
         // 左侧出
         outLeft:function(){
-          var first = this.dom.children[0],
+          var childs = this.dom.children,
+              first = childs[0],
               num = first.textContent;
 
           this.dom.removeChild(first);
+          this.state = 2;
+          this.upView(num);
           return num;
         },
         // 右侧出
         outRight:function(){
-          var last = this.dom.children[this.dom.children.length-1],
+          var childs = this.dom.children,
+              last = childs[childs.length-1],
               num = last.textContent;
 
           this.dom.removeChild(last);
+          this.state = 3;
+          this.upView();
           return num;
+        },
+        // 判断是否符合规则
+        isRule:function(num){
+          return num&&!isNaN(num);
+        },
+        upView:function(num){
+          var li = document.createElement("li");
+          switch(this.state){
+            case 0:
+            case 1:
+              li.style.height = num + "px";
+              viewBox.appendChild(li);
+              break;
+            case 2:
+              viewBox.removeChild(viewBox.firstElementChild);
+              break;
+            case 3:
+              viewBox.removeChild(viewBox.lastElementChild);
+              break;
+          }
         }
       };
 
@@ -89,7 +146,8 @@
           inRight = document.getElementById("in_right"),
           outLeft = document.getElementById("out_left"),
           outRight = document.getElementById("out_right"),
-          nums = document.getElementById("nums");
+          nums = document.getElementById("nums"),
+          viewBox = document.getElementById("viewBox");
 
       var queue = new Queue("#nums");
 
@@ -100,10 +158,9 @@
         实现这个功能倒不是难事，主要还是要解耦合啦
 
        */
-
       inLeft.addEventListener("click",function(){
         var val = txt.value;
-        if(val&&!isNaN(val)){
+        if(queue.isRule(val)){
           queue.inLeft(val);
           txt.value = "";
         }
@@ -111,7 +168,7 @@
 
       inRight.addEventListener("click",function(){
         var val = txt.value;
-        if(val&&!isNaN(val)){
+        if(queue.isRule(val)){
           queue.inRight(val);
           txt.value = "";
         }
