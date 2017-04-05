@@ -22,6 +22,11 @@
   </style>
 </head>
 <body>
+  <div id="btn">
+    <input type="button" data-order="preOrder" value="前序">
+    <input type="button" data-order="inOrder" value="中序">
+    <input type="button" data-order="postOrder" value="后序">
+  </div>
   <div id="box">
     <div>
       <div>
@@ -45,16 +50,21 @@
     </div>
   </div>
   <script>
+    // 树
     function Tree(box){
       var root = new Node(box);
+      // 节点
       function Node(node){
         this.node = node;
         this.left = null;
         this.right = null;
       }
+      // 插入节点
       function insertNode(parent){
         var parentNode = parent.node;
+        // 如果父节点不存在，直接返回
         if(!parentNode)return;
+        // 递归插入子节点。
         if(parentNode.firstElementChild){
           parent.left = new Node(parentNode.firstElementChild);
           insertNode(parent.left);
@@ -64,12 +74,14 @@
           insertNode(parent.right);
         }
       }
+      // 显示root
       this.showRoot = function(){
         return root;
       };
       insertNode(root);
     }
     Tree.prototype = {
+      // 前序
       preOrder:function(){
         var root = this.showRoot();
         var arr = [root.node];
@@ -88,23 +100,71 @@
         }
         getNode(root);
         return arr;
-      }
-    };
-    var tree = new Tree(box),
-        arr = tree.preOrder(),
+      },
+      // 中序
+      inOrder:function(){
+        var root = this.showRoot();
+        var arr = [];
+        function getNode(current){
+          if(!current.node)return;
+          if(current.left){
+            getNode(current.left);
+          }
+          arr.push(current.node);
+          if(current.right){
+            getNode(current.right);
+          }
+        }
+        getNode(root);
+        return arr;
+      },
+      // 后序
+      postOrder:function(){
+        var root = this.showRoot();
+        var arr = [];
+        function getNode(current){
+          if(!current.node)return;
+          if(current.right){
+            getNode(current.right);
+          }
+          if(current.left){
+            getNode(current.left);
+          }
+          arr.push(current.node);
+        }
+        getNode(root);
+        return arr;
+      },
+      // 展示渲染过程
+      viewOrder:function(select){
+        var tree = new Tree(box),
+        arr = tree[select](),
         len = arr.length - 1,
         index = 0;
-    var time = setInterval(function(){
-      if(index == len){
-        clearInterval(time);
-      }
-      if(index!=0){
-        arr[index-1].classList.remove("on");
-      }
-      arr[index].classList.add("on");
 
-      index++;
-    },200);
+        var time = setInterval(function(){
+          if(index == len){
+            clearInterval(time);
+          }
+          if(index!=0){
+            arr[index-1].classList.remove("on");
+          }
+          arr[index].classList.add("on");
+
+          index++;
+        },500);
+      },
+    };
+
+    (function(){
+      var tree = new Tree(box);
+      var btns = document.querySelectorAll("#btn > input");
+      for(var i=0,len=btns.length;i<len;i++){
+        btns[i].addEventListener("click",function(){
+          tree.viewOrder(this.dataset["order"]);
+        });
+      }
+    })();
   </script>
 </body>
 </html>
