@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动态数据绑定（一）</title>
+</head>
+<body>
+<script>
+    function Observer(obj){
+        this.obj = obj;
+        this.getCurrentObj(obj);
+        return obj;
+    }
+    Observer.prototype = {
+    // 递归当前对象
+        getCurrentObj(obj){
+            for(var k in obj){
+                if(obj.hasOwnProperty(k)){
+                    if(typeof obj[k] === 'object'){
+                        // 虽然创建的是一个新对象，但是里面的obj[k]和它是引用关系。
+                        new Observer(obj[k]);
+                    }
+                    // 确保obj也可以被监听到，缺点访问子节点，父节点也会被触发
+                    this.listen(k,obj[k]);
+                }
+            }
+        },
+        // 监听 注意使用了set和get后defineProperty是无法设置值的，而里面的key，val属于闭包
+        listen(key,val){
+            Object.defineProperty(this.obj,key,{
+                set(newVal){
+                    if(newVal === val)return;
+                    console.log(`你设置了 ${key}，新的值为${newVal}`);
+                    val = newVal;
+                },
+                get(){
+                    console.log("你访问了",key);
+                    return val;
+                }
+            });
+        }
+    };
+    let app = new Observer({
+        name:"前端",
+        list:{
+            css:"1111",
+            js:"22222",
+            html:{
+                html1:"html1.0",
+                html2:"html2.0"
+            }
+        }
+    });
+</script>
+</body>
+</html>
